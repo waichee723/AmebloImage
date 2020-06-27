@@ -75,6 +75,12 @@ class MainViewModel : ViewModel() {
         }
     }
 
+    private suspend fun downloadImage(url: String) {
+        withContext(Dispatchers.IO) {
+
+        }
+    }
+
     fun completeDisplayToast() {
         _toast.value = null
     }
