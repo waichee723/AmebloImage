@@ -16,26 +16,43 @@
         tools:context=".ui.main.MainFragment"
         android:orientation="vertical">
 
-
-        <EditText
-            android:id="@+id/editText_urlInput"
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/editText_urlInputLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:autofillHints="Input ameblo url"
-            android:inputType="textUri"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"/>
+            app:layout_constraintEnd_toEndOf="parent"
+            app:endIconMode="clear_text"
+            android:layout_marginTop="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="8dp">
 
-        <Button
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/editText_urlInput"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:autofillHints="Input ameblo url"
+                android:inputType="textUri"
+                android:text="@={viewModel.inputUrl}"
+                android:hint="Input Ameblo Url"/>
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/button_Go"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="GO"
-            app:layout_constraintTop_toBottomOf="@id/editText_urlInput"
+            app:layout_constraintTop_toBottomOf="@id/editText_urlInputLayout"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            android:onClick="@{()->viewModel.onGet()}"/>
+            android:onClick="@{()->viewModel.onGet()}"
+            android:layout_marginTop="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="8dp"/>
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerView"
@@ -47,7 +64,6 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             app:listData="@{viewModel.photos}"/>
-
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

@@ -1,6 +1,7 @@
-package com.waichee.amebloimage.ui
+package com.waichee.amebloimage
 
 import android.widget.ImageView
+import android.widget.TextView
 import androidx.databinding.BindingAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.squareup.picasso.Picasso

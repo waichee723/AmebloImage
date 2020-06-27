@@ -1,8 +1,11 @@
 package com.waichee.amebloimage.ui.main
 
+import android.widget.Toast
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.waichee.amebloimage.ui.isAmeblo
+import com.waichee.amebloimage.ui.isAmebloEntry
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -18,37 +21,62 @@ class MainViewModel : ViewModel() {
     private val viewModelJob = SupervisorJob()
     private val viewModelScope = CoroutineScope(viewModelJob + Dispatchers.Main)
 
-    private val url: String = "https://ameblo.jp/tsubaki-factory/entry-12606831572.html"
+    val inputUrl = MutableLiveData<String>()
 
     private val _photos = MutableLiveData<List<String>>()
     val photos: LiveData<List<String>>
         get() = _photos
 
+    private val _toast = MutableLiveData<String>()
+    val toast: LiveData<String>
+        get() = _toast
+
+    init {
+        inputUrl.value = ""
+    }
 
     fun onGet() {
-        viewModelScope.launch {
-            getData()
+
+        _photos.value = emptyList()
+
+        if (inputUrl.value == "") {
+            _toast.value = "Url cannot be empty"
+        } else if (!inputUrl.value!!.isAmeblo()) {
+            _toast.value = "Url must be ameblo"
+        } else if (!inputUrl.value!!.isAmebloEntry()) {
+            _toast.value = "Url must be blog entry"
+        } else {
+
+            viewModelScope.launch {
+                getData(inputUrl.value!!)
+            }
+
         }
     }
 
-    private suspend fun getData() {
-        Timber.i("getData executed")
+    private suspend fun getData(url: String) {
+
         withContext(Dispatchers.IO) {
             try {
                 val document = Jsoup.connect(url).get()
                 val images = document.getElementsByClass("PhotoSwipeImage")
-                images.forEach {
-                    Timber.i(it.attr("src"))
-                }
+
                 val imagesString: List<String> = images.map { it.attr("src") }
+
+                if (imagesString.isEmpty()) {
+                    _toast.postValue("This blog has 0 images")
+                }
+
                 _photos.postValue(imagesString)
 
-                Timber.i("title is ${document.title()}")
-
             } catch (e: IOException) {
-                Timber.e("Error")
+                _toast.postValue("No Response. Please try again or check if Url is correct.")
             }
         }
+    }
+
+    fun completeDisplayToast() {
+        _toast.value = null
     }
 
 
