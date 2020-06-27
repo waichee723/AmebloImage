@@ -28,9 +28,15 @@ class MainFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
 
+        // Receive url from intent
+        val intentUrl = arguments?.getString("intent_url")
+
         val binding = MainFragmentBinding.inflate(inflater)
         viewModel = ViewModelProviders.of(this).get(MainViewModel::class.java)
         binding.viewModel = viewModel
+
+        // Set url from intent to editText
+        viewModel.inputUrl.value = intentUrl
 
         binding.recyclerView.adapter = PhotoAdapter()
         binding.lifecycleOwner = viewLifecycleOwner
@@ -41,7 +47,6 @@ class MainFragment : Fragment() {
                 viewModel.completeDisplayToast()
             }
         })
-
 
         return binding.root
     }
