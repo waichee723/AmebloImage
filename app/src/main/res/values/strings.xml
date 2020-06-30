@@ -1,4 +1,18 @@
 <resources>
     <string name="app_name">AmebloImage</string>
     <string name="request_string">Request for permission</string>
+    <string name="url_input_hint">Input Ameblo Url</string>
+    <string name="go_button">GO</string>
+    <string name="download_button">Download All</string>
+
+    <!--    Toast-->
+    <string name="no_photo_toast">"This blog has 0 images"</string>
+    <string name="no_response_toast">No Response. Please try again or check if Url is correct.</string>
+    <string name="download_complete_toast">All images saved</string>
+    <string name="empty_url_toast">Url cannot be empty</string>
+    <string name="non_ameblo_url_toast">Url must be ameblo</string>
+    <string name="not_blog_entry_toast">Url must be blog entry</string>
+
+    <!--    Permission-->
+    <string name="permission_alert">Please grant the external storage permission</string>
 </resources>

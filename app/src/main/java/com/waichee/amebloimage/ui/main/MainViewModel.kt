@@ -7,16 +7,15 @@ import android.os.Environment
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import com.waichee.amebloimage.R
 import com.waichee.amebloimage.isAmeblo
 import com.waichee.amebloimage.isAmebloEntry
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.jsoup.Jsoup
-import timber.log.Timber
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
@@ -25,7 +24,6 @@ import java.io.OutputStream
 import java.net.URI
 import java.net.URL
 
-// https://stat.ameba.jp/user_images/20200625/22/morningmusume-9ki/5c/cd/j/o1080080914779694243.jpg?caw=800
 
 class MainViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -42,8 +40,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     val isLoading: LiveData<Boolean>
         get() = _isLoading
 
-    private val _toast = MutableLiveData<String>()
-    val toast: LiveData<String>
+    private val _toast = MutableLiveData<Int>()
+    val toast: LiveData<Int>
         get() = _toast
 
     init {
@@ -55,13 +53,14 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
         _photos.value = emptyList()
 
+
         // Checking for input text
         if (inputUrl.value == "") {
-            _toast.value = "Url cannot be empty"
+            _toast.value = R.string.empty_url_toast
         } else if (!inputUrl.value!!.isAmeblo()) {
-            _toast.value = "Url must be ameblo"
+            _toast.value = R.string.non_ameblo_url_toast
         } else if (!inputUrl.value!!.isAmebloEntry()) {
-            _toast.value = "Url must be blog entry"
+            _toast.value = R.string.not_blog_entry_toast
         } else {
             viewModelScope.launch {
                 _isLoading.value = true
@@ -76,19 +75,18 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     private suspend fun getData(url: String) {
         withContext(Dispatchers.IO) {
             try {
-
                 val document = Jsoup.connect(url).get()
                 val images = document.getElementsByClass("PhotoSwipeImage")
 
                 val imagesString: List<String> = images.map { it.attr("src") }
 
                 if (imagesString.isEmpty()) {
-                    _toast.postValue("This blog has 0 images")
+                    _toast.postValue(R.string.no_photo_toast)
 
                 }
                 _photos.postValue(imagesString)
             } catch (e: IOException) {
-                _toast.postValue("No Response. Please try again or check if Url is correct.")
+                _toast.postValue(R.string.no_response_toast)
             }
         }
     }
@@ -115,8 +113,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
         withContext(Dispatchers.IO) {
             try {
-                val inputStream: InputStream = URL(imageUrl).openStream() // Download Image from URL
-                bitmap = BitmapFactory.decodeStream(inputStream) // Decode Bitmap
+                val inputStream: InputStream = URL(imageUrl).openStream()
+                bitmap = BitmapFactory.decodeStream(inputStream)
                 inputStream.close()
             } catch (e: Exception) {
                 e.printStackTrace()
@@ -127,6 +125,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     fun onDownload() {
         viewModelScope.launch {
+            _isLoading.value = true
             photos.value?.forEach {
                 val image: Bitmap? = downloadImageBitmap(it)
                 val uri = URI(it)
@@ -135,14 +134,14 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                     saveImage(image, imageName)
                 }
             }
-            _toast.postValue("All images saved")
+            _toast.postValue(R.string.download_complete_toast)
+            _isLoading.value = false
         }
     }
 
     fun completeDisplayToast() {
         _toast.value = null
     }
-
 
     override fun onCleared() {
         super.onCleared()

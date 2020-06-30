@@ -9,9 +9,9 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
+import com.waichee.amebloimage.R
 import com.waichee.amebloimage.RC_EXTERNAL_STORAGE
 import com.waichee.amebloimage.databinding.MainFragmentBinding
-import kotlinx.android.synthetic.main.main_fragment.status_image
 import pub.devrel.easypermissions.AfterPermissionGranted
 import pub.devrel.easypermissions.EasyPermissions
 
@@ -48,7 +48,7 @@ class MainFragment : Fragment() {
 
         viewModel.toast.observe(viewLifecycleOwner, Observer {
             if (it != null) {
-                Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, getString(it), Toast.LENGTH_SHORT).show()
                 viewModel.completeDisplayToast()
             }
         })
@@ -67,13 +67,10 @@ class MainFragment : Fragment() {
 
     @AfterPermissionGranted(RC_EXTERNAL_STORAGE)
     private fun methodRequiresPermission() {
-        val perms: String =Manifest.permission.WRITE_EXTERNAL_STORAGE
-        if (EasyPermissions.hasPermissions(context!!, perms)) {
-
-        } else {
-            // Do not have permissions, request them now
+        val perms: String = Manifest.permission.WRITE_EXTERNAL_STORAGE
+        if (!EasyPermissions.hasPermissions(context!!, perms)) {
             EasyPermissions.requestPermissions(
-                this, "Please grant the location permission", RC_EXTERNAL_STORAGE, perms
+                this, getString(R.string.permission_alert), RC_EXTERNAL_STORAGE, perms
             )
         }
     }
