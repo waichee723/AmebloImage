@@ -1,5 +1,6 @@
 package com.waichee.amebloimage
 
+import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.databinding.BindingAdapter
@@ -18,4 +19,13 @@ fun bindImage(imgView: ImageView, url: String?) {
 fun bindListData(recyclerView: RecyclerView, data: List<String>?) {
     val adapter = recyclerView.adapter as PhotoAdapter
     adapter.submitList(data)
+}
+
+@BindingAdapter("loadingStatus")
+fun bindStatus(statusImageView: ImageView, status: Boolean) {
+    if (status) {
+        statusImageView.visibility = View.VISIBLE
+    } else {
+        statusImageView.visibility = View.GONE
+    }
 }

@@ -12,6 +12,7 @@ import com.waichee.amebloimage.isAmebloEntry
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.jsoup.Jsoup
@@ -37,12 +38,17 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     val photos: LiveData<List<String>>
         get() = _photos
 
+    private val _isLoading = MutableLiveData<Boolean>()
+    val isLoading: LiveData<Boolean>
+        get() = _isLoading
+
     private val _toast = MutableLiveData<String>()
     val toast: LiveData<String>
         get() = _toast
 
     init {
         inputUrl.value = ""
+        _isLoading.value = false
     }
 
     fun onGet() {
@@ -58,14 +64,19 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             _toast.value = "Url must be blog entry"
         } else {
             viewModelScope.launch {
+                _isLoading.value = true
                 getData(inputUrl.value!!)
+                _isLoading.value = false
             }
         }
+
+
     }
 
     private suspend fun getData(url: String) {
         withContext(Dispatchers.IO) {
             try {
+
                 val document = Jsoup.connect(url).get()
                 val images = document.getElementsByClass("PhotoSwipeImage")
 
@@ -73,6 +84,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
                 if (imagesString.isEmpty()) {
                     _toast.postValue("This blog has 0 images")
+
                 }
                 _photos.postValue(imagesString)
             } catch (e: IOException) {
@@ -83,7 +95,9 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     private suspend fun saveImage(b: Bitmap, imageName: String) {
         var foStream: OutputStream
-        val saveImage = File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), "$imageName")
+        val saveImage = File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),
+            imageName
+        )
 
         withContext(Dispatchers.IO) {
             try {

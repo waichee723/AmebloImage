@@ -11,6 +11,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.waichee.amebloimage.RC_EXTERNAL_STORAGE
 import com.waichee.amebloimage.databinding.MainFragmentBinding
+import kotlinx.android.synthetic.main.main_fragment.status_image
 import pub.devrel.easypermissions.AfterPermissionGranted
 import pub.devrel.easypermissions.EasyPermissions
 
@@ -68,7 +69,7 @@ class MainFragment : Fragment() {
     private fun methodRequiresPermission() {
         val perms: String =Manifest.permission.WRITE_EXTERNAL_STORAGE
         if (EasyPermissions.hasPermissions(context!!, perms)) {
-            Toast.makeText(context, "Permission already granted", Toast.LENGTH_SHORT).show();
+
         } else {
             // Do not have permissions, request them now
             EasyPermissions.requestPermissions(
