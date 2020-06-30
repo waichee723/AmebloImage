@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">AmebloImage</string>
+    <string name="request_string">Request for permission</string>
 </resources>

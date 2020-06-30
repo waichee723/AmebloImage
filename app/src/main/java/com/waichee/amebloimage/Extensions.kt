@@ -1,4 +1,4 @@
-package com.waichee.amebloimage.ui
+package com.waichee.amebloimage
 
 fun String.isAmeblo(): Boolean {
     return this.startsWith("https://ameblo.jp/")

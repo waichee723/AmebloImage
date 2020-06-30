@@ -1,11 +1,14 @@
 package com.waichee.amebloimage.ui.main
 
-import android.widget.Toast
+import android.app.Application
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.os.Environment
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import com.waichee.amebloimage.ui.isAmeblo
-import com.waichee.amebloimage.ui.isAmebloEntry
+import com.waichee.amebloimage.isAmeblo
+import com.waichee.amebloimage.isAmebloEntry
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -13,10 +16,17 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.jsoup.Jsoup
 import timber.log.Timber
+import java.io.File
+import java.io.FileOutputStream
 import java.io.IOException
-import kotlin.reflect.typeOf
+import java.io.InputStream
+import java.io.OutputStream
+import java.net.URI
+import java.net.URL
 
-class MainViewModel : ViewModel() {
+// https://stat.ameba.jp/user_images/20200625/22/morningmusume-9ki/5c/cd/j/o1080080914779694243.jpg?caw=800
+
+class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     private val viewModelJob = SupervisorJob()
     private val viewModelScope = CoroutineScope(viewModelJob + Dispatchers.Main)
@@ -39,6 +49,7 @@ class MainViewModel : ViewModel() {
 
         _photos.value = emptyList()
 
+        // Checking for input text
         if (inputUrl.value == "") {
             _toast.value = "Url cannot be empty"
         } else if (!inputUrl.value!!.isAmeblo()) {
@@ -46,16 +57,13 @@ class MainViewModel : ViewModel() {
         } else if (!inputUrl.value!!.isAmebloEntry()) {
             _toast.value = "Url must be blog entry"
         } else {
-
             viewModelScope.launch {
                 getData(inputUrl.value!!)
             }
-
         }
     }
 
     private suspend fun getData(url: String) {
-
         withContext(Dispatchers.IO) {
             try {
                 val document = Jsoup.connect(url).get()
@@ -66,18 +74,54 @@ class MainViewModel : ViewModel() {
                 if (imagesString.isEmpty()) {
                     _toast.postValue("This blog has 0 images")
                 }
-
                 _photos.postValue(imagesString)
-
             } catch (e: IOException) {
                 _toast.postValue("No Response. Please try again or check if Url is correct.")
             }
         }
     }
 
-    private suspend fun downloadImage(url: String) {
-        withContext(Dispatchers.IO) {
+    private suspend fun saveImage(b: Bitmap, imageName: String) {
+        var foStream: OutputStream
+        val saveImage = File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), "$imageName")
 
+        withContext(Dispatchers.IO) {
+            try {
+                foStream = FileOutputStream(saveImage)
+                b.compress(Bitmap.CompressFormat.PNG, 100, foStream);
+                foStream.close();
+            } catch (e: Exception) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private suspend fun downloadImageBitmap(imageUrl: String): Bitmap? {
+        var bitmap: Bitmap? = null
+
+        withContext(Dispatchers.IO) {
+            try {
+                val inputStream: InputStream = URL(imageUrl).openStream() // Download Image from URL
+                bitmap = BitmapFactory.decodeStream(inputStream) // Decode Bitmap
+                inputStream.close()
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+        return bitmap
+    }
+
+    fun onDownload() {
+        viewModelScope.launch {
+            photos.value?.forEach {
+                val image: Bitmap? = downloadImageBitmap(it)
+                val uri = URI(it)
+                val imageName = File(uri.path).name
+                if (image != null) {
+                    saveImage(image, imageName)
+                }
+            }
+            _toast.postValue("All images saved")
         }
     }
 

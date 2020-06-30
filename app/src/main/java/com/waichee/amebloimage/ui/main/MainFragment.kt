@@ -1,19 +1,18 @@
 package com.waichee.amebloimage.ui.main
 
-import androidx.lifecycle.ViewModelProviders
+import android.Manifest
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
-import com.waichee.amebloimage.R
+import androidx.lifecycle.ViewModelProviders
+import com.waichee.amebloimage.RC_EXTERNAL_STORAGE
 import com.waichee.amebloimage.databinding.MainFragmentBinding
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import timber.log.Timber
+import pub.devrel.easypermissions.AfterPermissionGranted
+import pub.devrel.easypermissions.EasyPermissions
 
 class MainFragment : Fragment() {
 
@@ -22,6 +21,11 @@ class MainFragment : Fragment() {
     }
 
     private lateinit var viewModel: MainViewModel
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        methodRequiresPermission()
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -51,4 +55,25 @@ class MainFragment : Fragment() {
         return binding.root
     }
 
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this)
+    }
+
+    @AfterPermissionGranted(RC_EXTERNAL_STORAGE)
+    private fun methodRequiresPermission() {
+        val perms: String =Manifest.permission.WRITE_EXTERNAL_STORAGE
+        if (EasyPermissions.hasPermissions(context!!, perms)) {
+            Toast.makeText(context, "Permission already granted", Toast.LENGTH_SHORT).show();
+        } else {
+            // Do not have permissions, request them now
+            EasyPermissions.requestPermissions(
+                this, "Please grant the location permission", RC_EXTERNAL_STORAGE, perms
+            )
+        }
+    }
 }
