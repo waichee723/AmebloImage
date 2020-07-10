@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">AmebloImage</string>
+    <string name="app_name">Ameblo Image Downloader</string>
     <string name="request_string">Request for permission</string>
     <string name="url_input_hint">Input Ameblo Url</string>
     <string name="go_button">GO</string>

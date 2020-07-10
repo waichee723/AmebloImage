@@ -90,6 +90,5 @@
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             app:listData="@{viewModel.photos}"/>
 
-
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
