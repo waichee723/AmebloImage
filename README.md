@@ -4,9 +4,6 @@ Ameblo Image Downloader is an Android app for user to download all images from a
 
 ## Screens
 
-![screenshot1](screenshots/Screenshot_20200630-103002.jpg){width=500px}
-![screenshot2](screenshots/Screenshot_20200630-103036.jpg){width=500px}   
-
 <img src="screenshots/Screenshot_20200630-103002.jpg" width="300">
 <img src="screenshots/Screenshot_20200630-103036.jpg" width="300">    
 
