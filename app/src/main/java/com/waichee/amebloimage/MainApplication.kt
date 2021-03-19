@@ -16,8 +16,10 @@ class MainApplication: Application() {
     }
 
     private fun delayedInit() {
-        applicationScope.launch {
-            Timber.plant(Timber.DebugTree())
+        if (BuildConfig.DEBUG) {
+            applicationScope.launch {
+                Timber.plant(Timber.DebugTree())
+            }
         }
     }
 }

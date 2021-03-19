@@ -8,7 +8,7 @@ import timber.log.Timber
 
 class MainActivity : AppCompatActivity() {
 
-    private var intent_url = ""
+    private var intentUrl = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -25,8 +25,8 @@ class MainActivity : AppCompatActivity() {
         if (savedInstanceState == null) {
             val fragment = MainFragment.newInstance()
             val args = Bundle()
-            args.putString("intent_url", intent_url)
-            Timber.i(intent_url)
+            args.putString("intent_url", intentUrl)
+            Timber.i(intentUrl)
             fragment.arguments = args
             supportFragmentManager.beginTransaction()
                 .replace(R.id.container, fragment)
@@ -36,7 +36,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun handleSendText(intent: Intent) {
         intent.getStringExtra(Intent.EXTRA_TEXT)?.let {
-            intent_url = it
+            intentUrl = it
         }
     }
 }
